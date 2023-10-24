@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <title>Daftar Jenis Barang</title>
+    <style>
+      .modal-title {
+        font-size: 1.25rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">Market</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/login">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/register">Register</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container mt-3">
+      <div class="row">
+        <div class="col">
+          <h1>Daftar Jenis Barang</h1>
+        </div>
+        <div class="col text-end">
+          <% if(user) { %> <% if(user.role == 1) { %>
+          <button
+            style="margin-left: 33rem"
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#exampleModal"
+          >
+            Tambah Jenis Barang
+          </button>
+          <% } %> <% } %>
+        </div>
+      </div>
+
+      <% if (user) { %>
+      <h3>Saldo Anda: <%= saldo(user.saldo) %></h3>
+      <% } %>
+
+      <table class="table table-bordered table-striped mt-3 text-center">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Nama</th>
+            <th>Pilih</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for (let a of jenisBarang) { %>
+          <tr>
+            <td><%= a.id_jenisBarang %></td>
+            <td><%= a.jenisBarang %></td>
+            <td>
+              <a
+                class="btn btn-success"
+                href="/pilihBarang/<%= a.id_jenisBarang %>"
+                >Pilih</a
+              >
+            </td>
+            <td>
+              <% if(user) { %> <% if(user.role == 1) { %>
+              <button
+                type="button"
+                class="badge bg-warning"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal1"
+                onclick="edit('<%= a.JenisBarang %>','<%= a.id_JenisBarang %>')"
+              >
+                Edit
+              </button>
+
+              <a
+                href="/hapusJenis/<%= a.id_JenisBarang %>"
+                class="badge bg-danger"
+                onclick="return confirm('Apakah Serius?')"
+                >Hapus</a
+              >
+              <% } %> <% } %>
+            </td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Modal Tambah Barang -->
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title" id="exampleModalLabel">Tambah Barang</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form action="/tambahJenisBarang" method="post">
+              <div class="mb-3">
+                <label class="form-label">Jenis Barang</label>
+                <input
+                  type="text"
+                  name="JenisBarang"
+                  id="JenisBarang"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">
+                  Save changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Edit Barang -->
+    <div
+      class="modal fade"
+      id="modalEdit"
+      tabindex="-1"
+      aria-labelledby="modalEditLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title" id="modalEditLabel">Edit Barang</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <form action="/editJenis" method="post">
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label">Jenis Barang</label>
+                <input
+                  type="text"
+                  name="jenis"
+                  id="jenis"
+                  class="form-control"
+                  required
+                />
+                <input
+                  type="hidden"
+                  name="id_jenis"
+                  id="id_jenis"
+                  class="form-control"
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">
+                Save changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      const edit = (jenis, id_jenis) => {
+        console.log(jenis, id_jenis);
+        document.getElementById("jenis").value = jenis;
+        document.getElementById("id_jenis").value = id_jenis;
+      };
+    </script>
+  </body>
+</html>
